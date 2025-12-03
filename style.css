@@ -1,0 +1,192 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #e5f8ef;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #90e0c6 60%, #c3f7df 100%);
+    padding: 1em 2em;
+    box-shadow: 0 2px 8px rgba(60, 110, 80, 0.08);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.6em;
+    color: #219274;
+    letter-spacing: 2px;
+}
+
+.navbar-links a {
+    margin-left: 2em;
+    text-decoration: none;
+    color: #219274;
+    font-size: 1em;
+    transition: color 0.2s;
+    border-radius: 6px;
+    padding: 0.3em 0.7em;
+}
+
+.navbar-links a:hover {
+    background-color: #c3f7df;
+    color: #267a5c;
+}
+
+/* Layout für die Filter und Hotelliste */
+.main-layout {
+    display: flex;
+    min-height: 90vh;
+}
+
+/* Filterbereich (links) */
+#filters {
+    flex: 0 0 300px;
+    background: #f2fcec;
+    border-right: 2px solid #d0f5e2;
+    padding: 1.5em 1.5em 1em;
+}
+
+/* Hotelliste (rechts) */
+#app {
+    flex: 1 1 0%;
+    padding: 2em 2em 1em;
+}
+
+/* Checkbox-Design */
+.filter-category {
+    margin-bottom: 2em;
+}
+.filter-category h4 {
+    margin-bottom: 0.5em;
+    color: #219274;
+    font-size: 1.06em;
+    border-bottom: 1px solid #90e0c6;
+}
+.filter-list label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.7em;
+    font-size: 1em;
+    cursor: pointer;
+}
+input[type="checkbox"] {
+    accent-color: #219274;
+    margin-right: 0.75em;
+}
+
+.popup {
+    position: fixed;
+    background: white;
+    border: 1px solid #90e0c6;
+    padding: 1em;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+    width: 300px;
+    z-index: 100;
+    box-shadow: 0 4px 18px rgba(60,110,80,0.15);
+}
+.popup-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.8em;
+}
+
+button {
+    margin-left: 1em;
+    margin-top: 0.5em;
+    background: #90e0c6;
+    color: #267a5c;
+    border: none;
+    border-radius: 5px;
+    padding: 0.4em 0.8em;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button:hover {
+    background: #c3f7df;
+}
+.accommodation-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2em;
+}
+
+.accommodation-card {
+    background: #fff;
+    border: 2px solid #90e0c6;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(60,110,80,0.12);
+    width: 320px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}
+
+.accommodation-card:hover {
+    box-shadow: 0 4px 18px rgba(33,146,116,0.19);
+}
+
+.card-content {
+    padding: 1.2em;
+}
+
+.card-title {
+    font-weight: bold;
+    font-size: 1.19em;
+    margin-bottom: 0.5em;
+    color: #219274;
+}
+.card-type {
+    font-weight: normal;
+    color: #267a5c;
+}
+
+.card-image{
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.card-rating {
+    font-size: 1.1em;
+    color: #267a5c;
+    font-weight: 700;
+    margin-bottom: 0.3em;
+}
+.card-features {
+    margin-bottom: 0.5em;
+    color: #41b18a;
+    font-size: 0.98em;
+}
+.card-description {
+    color: #333;
+    margin-bottom: 0.8em;
+    font-size: 0.97em;
+}
+.merkliste-button-container {
+  position: absolute;
+  top: 60px; 
+  right: 20px;
+}
+
+.merkliste-button {
+  background-color: #219274;
+  color: white;
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.merkliste-button:hover {
+  background-color: #267a5c;
+}
+

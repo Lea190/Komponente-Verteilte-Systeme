@@ -19,6 +19,13 @@ const App = {
         const res = await fetch("http://127.0.0.1:5000/api/accommodations");
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         accommodations.value = await res.json();
+        const urlParams = new URLSearchParams(window.location.search);
+const selectedStadt = urlParams.get('stadt');
+if (selectedStadt) {
+    accommodations.value = accommodations.value.filter(hotel => hotel.city === selectedStadt);
+    window.filtersSelected.value = { ...window.filtersSelected.value, stadt: [selectedStadt] }; // Für Filter-UI
+    console.log(`Gefiltert nach Stadt: ${selectedStadt}`);
+}
         console.log("✓ Unterkünfte geladen:", accommodations.value.length);
       } catch (err) {
         console.error("✗ Fehler beim Laden der Unterkünfte:", err);
@@ -102,20 +109,34 @@ const App = {
       {{ notification }}
     </div>
 
-    <div class="cards">
-      <div
-        v-for="item in filteredAccommodations"
-        :key="item.id"
-        class="card"
-        @click="selectAccommodation(item)"
-      >
-        <img :src="item.image || hotelImages[item.id]" alt="" class="card-image" />
-        <h3>{{ item.name }}</h3>
-        <p>{{ item.city }} · {{ item.type }}</p>
-        <p>{{ item.price.toFixed(2) }} € pro Nacht · max. {{ item.max_persons }} Personen</p>
-        <p>Bewertung: {{ item.rating }}</p>
-      </div>
+    <div class="accommodation-grid">
+  <div 
+    v-for="item in filteredAccommodations" 
+    :key="item.id" 
+    class="accommodation-card" 
+    @click="selectAccommodation(item)"
+  >
+    <img 
+      :src="item.image || hotelImages[item.id % hotelImages.length]" 
+      alt="Unterkunft" 
+      class="card-image"
+    >
+    <div class="card-content">
+      <h3 class="card-title">{{ item.name }}</h3>
+      <p class="card-location">{{ item.city }} • {{ item.type }}</p>
+      <p class="card-price">{{ item.price.toFixed(2) }} € / Nacht</p>
+      <p class="card-rating">⭐ {{ item.rating }}/5 </p>
+      <p class="person-icons">
+        <span 
+          v-for="n in item.max_persons" 
+          :key="n" 
+          class="person-icon"
+        >👤</span>
+      </p>
     </div>
+  </div>
+</div>
+
 
     <div v-if="selectedAccommodation" class="popup">
       <div class="popup-content">

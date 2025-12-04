@@ -117,5 +117,28 @@ if __name__ == "__main__":
     print(f"Nutze Datenbankdatei: {DB_PATH}")
     app.run(debug=True)
 
+@app.route('/api/accommodations/<stadt>')
+def get_accommodations_by_city(stadt):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT UnterkunftID AS UnterkunftID, Name AS Name, Bezeichnung AS Bezeichnung, 
+               Sterne AS Sterne, Stadt AS Stadt, PreisproNacht AS PreisproNacht, 
+               maxPersonen AS maxPersonen, Beschreibung AS Beschreibung, 
+               Eigenschaften AS Eigenschaften, BildURL AS BildURL 
+        FROM Unterkunft WHERE Stadt = ?
+    """, (stadt,))
+    rows = cur.fetchall()
+    conn.close()
+    accommodations = []
+    for row in rows:
+        accommodations.append({
+            'id': row['UnterkunftID'], 'name': row['Name'], 'type': row['Bezeichnung'],
+            'description': row['Beschreibung'], 'rating': row['Sterne'], 'city': row['Stadt'],
+            'price': row['PreisproNacht'], 'maxpersons': row['maxPersonen'],
+            'features': row['Eigenschaften'].split(',') if row['Eigenschaften'] else [],
+            'image': row['BildURL']
+        })
+    return jsonify(accommodations)
 
-    
+

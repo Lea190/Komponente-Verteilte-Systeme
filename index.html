@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buchen.de - Startseite</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">Buchen.de</div>
+        <div class="navbar-links">
+            <a href="index.html">Unterkünfte</a>
+            <a href="https://www.booking.com/flights" target="_blank">Flüge</a>
+            <a href="https://www.booking.com/flight+hotel" target="_blank">Flug+Hotel</a>
+            <a href="https://www.booking.com/cars" target="_blank">Mietwagen</a>
+            <a href="https://www.booking.com/attractions" target="_blank">Attraktionen</a>
+            <a href="https://www.booking.com/taxi" target="_blank">Flughafentaxis</a>
+        </div>
+        <div class="merkliste-button-container">
+            <a href="merkliste.html" class="merkliste-button">Merkliste</a>
+        </div>
+    </nav>
+
+   <div class="search-section">
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" id="stadt-input" placeholder="In welcher Stadt möchten Sie reisen?" readonly>
+            <div id="stadt-dropdown" class="dropdown">
+                <!-- Städte werden per JS gefüllt -->
+            </div>
+            <button id="suchen-btn">Suchen</button>
+        </div>
+    </div>
+</div>
+
+
+
+    <script src="startseite.js"></script>
+</body>
+</html>

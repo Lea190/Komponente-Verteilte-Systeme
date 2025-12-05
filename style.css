@@ -535,5 +535,32 @@ merkliste-button-container {
 .dropdown-item:last-child {
     border-bottom: none !important;
 }
+.star-rating-filter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.star {
+  color: #ddd;
+  transition: color 0.15s;
+}
+
+.star.filled {
+  color: #ffd700;
+}
+
+/*.star:hover ~ .star:not(.filled),
+.star:hover {
+  color: #ffd700;
+}*/
+
+.star-rating-filter small {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 10px;
+}
 
 

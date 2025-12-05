@@ -58,21 +58,37 @@ const App = {
     loadWishlist();
 
     const filteredAccommodations = Vue.computed(() => {
-      const s = selected.value;  // 🔥 GEÄNDERT: selected.value statt selected
-      const filtersActive =
-        s.type?.length > 0 ||
-        s.rating?.length > 0 ||
-        s.features?.length > 0;
+  const s = selected.value;
 
-      if (!filtersActive) return accommodations.value;
+  // Sind überhaupt Filter aktiv?
+  const filtersActive =
+    (s.type && s.type.length > 0) ||
+    (s.ratingStars && s.ratingStars > 0) ||
+    (s.features && s.features.length > 0);
 
-      return accommodations.value.filter(hotel => {
-        const typeOk   = !s.type?.length   || s.type.includes(hotel.type);
-        const ratingOk = !s.rating?.length || s.rating.some(r => hotel.rating >= r);
-        const featOk   = !s.features?.length || s.features.every(f => hotel.features.includes(f));
-        return typeOk && ratingOk && featOk;
-      });
-    });
+  if (!filtersActive) {
+    return accommodations.value;
+  }
+
+  return accommodations.value.filter(hotel => {
+    // Typ-Filter
+    const typeOk =
+      !s.type || s.type.length === 0 || s.type.includes(hotel.type);
+
+    // NEU: Sterne-Filter (Backend-Feld heißt "rating" und ist 1–5)
+    const ratingOk =
+      !s.ratingStars || parseInt(hotel.rating) >= s.ratingStars;
+
+    // Feature-Filter
+    const featOk =
+      !s.features || s.features.length === 0 ||
+      s.features.every(f => hotel.features.includes(f));
+
+    return typeOk && ratingOk && featOk;
+  });
+});
+
+
 
     function selectAccommodation(item) {
       selectedAccommodation.value = item;

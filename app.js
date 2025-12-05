@@ -1,14 +1,19 @@
-//const hotelImages = {
-  //1: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-  //2: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=400&q=80",
-  //3: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=400&q=80",
-  //4: "https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=400&q=80"
-//};
-
 const App = {
   setup() {
+    // 🔥 NEU: Filters initialisieren (für Startseite wichtig!)
+    if (!window.filtersSelected) {
+      window.filtersSelected = Vue.ref({
+        type: [],
+        rating: [],
+        features: []
+      });
+    }
+
     const accommodations = Vue.ref([]);
-    const selected = window.filtersSelected?.value || { type: [], rating: [], features: [] };
+    
+    // 🔥 GEÄNDERT: Reaktiv auf window.filtersSelected hören
+    const selected = Vue.computed(() => window.filtersSelected.value);
+    
     const wishlist = Vue.ref([]);              // wird vom Backend geladen
     const selectedAccommodation = Vue.ref(null);
     const notification = Vue.ref("");
@@ -20,12 +25,15 @@ const App = {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         accommodations.value = await res.json();
         const urlParams = new URLSearchParams(window.location.search);
-const selectedStadt = urlParams.get('stadt');
-if (selectedStadt) {
-    accommodations.value = accommodations.value.filter(hotel => hotel.city === selectedStadt);
-    window.filtersSelected.value = { ...window.filtersSelected.value, stadt: [selectedStadt] }; // Für Filter-UI
-    console.log(`Gefiltert nach Stadt: ${selectedStadt}`);
-}
+        const selectedStadt = urlParams.get('stadt');
+        if (selectedStadt) {
+          accommodations.value = accommodations.value.filter(hotel => hotel.city === selectedStadt);
+          // 🔥 GEÄNDERT: Sicherstellen dass window.filtersSelected existiert
+          if (window.filtersSelected) {
+            window.filtersSelected.value.stadt = [selectedStadt];
+          }
+          console.log(`Gefiltert nach Stadt: ${selectedStadt}`);
+        }
         console.log("✓ Unterkünfte geladen:", accommodations.value.length);
       } catch (err) {
         console.error("✗ Fehler beim Laden der Unterkünfte:", err);
@@ -50,17 +58,18 @@ if (selectedStadt) {
     loadWishlist();
 
     const filteredAccommodations = Vue.computed(() => {
+      const s = selected.value;  // 🔥 GEÄNDERT: selected.value statt selected
       const filtersActive =
-        selected.type.length > 0 ||
-        selected.rating.length > 0 ||
-        selected.features.length > 0;
+        s.type?.length > 0 ||
+        s.rating?.length > 0 ||
+        s.features?.length > 0;
 
       if (!filtersActive) return accommodations.value;
 
       return accommodations.value.filter(hotel => {
-        const typeOk   = !selected.type.length   || selected.type.includes(hotel.type);
-        const ratingOk = !selected.rating.length || selected.rating.some(r => hotel.rating >= r);
-        const featOk   = !selected.features.length || selected.features.every(f => hotel.features.includes(f));
+        const typeOk   = !s.type?.length   || s.type.includes(hotel.type);
+        const ratingOk = !s.rating?.length || s.rating.some(r => hotel.rating >= r);
+        const featOk   = !s.features?.length || s.features.every(f => hotel.features.includes(f));
         return typeOk && ratingOk && featOk;
       });
     });
@@ -116,8 +125,9 @@ if (selectedStadt) {
     class="accommodation-card" 
     @click="selectAccommodation(item)"
   >
+    <!-- 🔥 GEÄNDERT: hotelImages auskommentiert (Backend liefert Bilder) -->
     <img 
-      :src="item.image || hotelImages[item.id % hotelImages.length]" 
+      :src="item.image" 
       alt="Unterkunft" 
       class="card-image"
     >
@@ -137,12 +147,12 @@ if (selectedStadt) {
   </div>
 </div>
 
-
     <div v-if="selectedAccommodation" class="popup">
       <div class="popup-content">
         <button class="popup-close" @click="closePopup">×</button>
 
-        <img :src="selectedAccommodation.image || hotelImages[selectedAccommodation.id]" alt="" class="popup-image" />
+        <!-- 🔥 GEÄNDERT: hotelImages auskommentiert -->
+        <img :src="selectedAccommodation.image" alt="" class="popup-image" />
 
         <h2>{{ selectedAccommodation.name }}</h2>
         <p>{{ selectedAccommodation.city }} · {{ selectedAccommodation.type }}</p>

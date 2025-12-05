@@ -26,8 +26,18 @@
 
     <!-- MAIN LAYOUT: Filter (links) + Hotels (rechts) -->
     <div class="main-layout">
-        <!-- FILTER (Vue App) -->
-        <div id="filters-container"></div>        
+        <!-- FILTER Vue App -->
+    <div id="filters-container" class="filters">
+        <!-- Bestehende Filter bleiben gleich, NEU: Preis-Sortierung -->
+        <div class="filter-category">
+            <h4>Preis sortieren</h4>
+            <select v-model="selected.priceSort" class="price-sort-select" @change="updateSorting">
+            <option value="">Standard</option>
+            <option value="asc">Preis aufsteigend</option>
+            <option value="desc">Preis absteigend</option>
+            </select>
+        </div>
+    </div>
         <!-- HOTEL LISTE (Vue App) -->
         <div id="app"></div>
     </div>

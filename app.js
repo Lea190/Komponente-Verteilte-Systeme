@@ -57,37 +57,42 @@ const App = {
     loadAccommodations();
     loadWishlist();
 
-    const filteredAccommodations = Vue.computed(() => {
+  const filteredAccommodations = Vue.computed(() => {
   const s = selected.value;
-
-  // Sind überhaupt Filter aktiv?
-  const filtersActive =
-    (s.type && s.type.length > 0) ||
-    (s.ratingStars && s.ratingStars > 0) ||
-    (s.features && s.features.length > 0);
-
-  if (!filtersActive) {
-    return accommodations.value;
-  }
-
-  return accommodations.value.filter(hotel => {
-    // Typ-Filter
-    const typeOk =
-      !s.type || s.type.length === 0 || s.type.includes(hotel.type);
-
-    // NEU: Sterne-Filter (Backend-Feld heißt "rating" und ist 1–5)
-    const ratingOk =
-      !s.ratingStars || parseInt(hotel.rating) >= s.ratingStars;
-
-    // Feature-Filter
-    const featOk =
-      !s.features || s.features.length === 0 ||
-      s.features.every(f => hotel.features.includes(f));
-
+  
+  // Filter aktiv? (inkl. Preis-Sortierung)
+  const filtersActive = 
+    s.type?.length > 0 || 
+    s.ratingStars > 0 || 
+    s.features?.length > 0 ||
+    s.priceSort;
+  
+  if (!filtersActive) return accommodations.value;
+  
+  // ALLE Filter KORREKT pro Hotel anwenden
+  let result = accommodations.value.filter(hotel => {
+    // Typ-Filter ✓
+    const typeOk = !s.type || s.type.length === 0 || s.type.includes(hotel.type);
+    
+    // Sterne-Filter ✓ (rating ist String "4", wird zu Int)
+    const ratingOk = !s.ratingStars || parseInt(hotel.rating) >= s.ratingStars;
+    
+    // Features-Filter ✓
+    const featOk = !s.features || s.features.length === 0 || 
+                    s.features.every(f => hotel.features.includes(f));
+    
     return typeOk && ratingOk && featOk;
   });
+  
+  // NEU: Preis-Sortierung NACH dem Filtern
+  if (s.priceSort === 'asc') {
+    result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+  } else if (s.priceSort === 'desc') {
+    result.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+  }
+  
+  return result;
 });
-
 
 
     function selectAccommodation(item) {

@@ -552,15 +552,25 @@ merkliste-button-container {
   color: #ffd700;
 }
 
-/*.star:hover ~ .star:not(.filled),
-.star:hover {
-  color: #ffd700;
-}*/
-
 .star-rating-filter small {
   font-size: 0.8rem;
   color: #666;
   margin-left: 10px;
 }
+.price-sort-select {
+  width: 100%;
+  padding: 0.7em;
+  border: 2px solid #90e0c6;
+  border-radius: 6px;
+  background: #f8fff9;
+  font-size: 1em;
+  cursor: pointer;
+}
+.price-sort-select:focus {
+  outline: none;
+  border-color: #219274;
+  background: #f0f8f0;
+}
+
 
 

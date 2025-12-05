@@ -2,107 +2,107 @@ const { createApp, ref } = Vue;
 
 const filtersApp = {
   setup() {
-    // Optionen für Checkbox-Filter
+    // Bestehende Filter-Optionen
     const filterOptions = ref({
       type: [
         { label: 'Hotel', value: 'Hotel' },
         { label: 'Wohnung', value: 'Wohnung' },
         { label: 'Hostel', value: 'Hostel' }
       ],
+      rating: [], // Jetzt leer - Sterne übernehmen das
       features: [
         { label: 'Terrasse', value: 'Terrasse' },
         { label: 'Spa', value: 'Spa' }
       ]
     });
 
-    // Ausgewählte Filter
+    // Erweiterte Filter inklusive NEU: priceSort
     const selected = ref({
       type: [],
-      ratingStars: null,   // 1–5
-      features: []
+      rating: [],
+      ratingStars: null,
+      features: [],
+      priceSort: ''  // NEU: 'asc', 'desc' oder ''
     });
 
-    // Für globalen Zugriff aus app.js
+    // Global für app.js verfügbar
     window.filtersSelected = selected;
 
+    // Bestehender Sternen-Code bleibt gleich
     const hoverStars = ref(0);
+    const handleStarEnter = (n) => { hoverStars.value = n; };
+    const handleStarLeave = () => { hoverStars.value = 0; };
+    // DEIN bewährter Stern-Klick Handler (ersetzt die alte)
+const handleStarClick = (event) => {
+  const star = event.target.closest('.star');
+  if (!star) return;
+  
+  const stars = parseInt(star.dataset.stars);
+  // Toggle: Klick auf aktuell ausgewählten Stern = zurücksetzen
+  selected.value.ratingStars = selected.value.ratingStars === stars ? null : stars;
+};
 
-    const handleStarEnter = (n) => {
-      hoverStars.value = n;
-    };
 
-    const handleStarLeave = () => {
-      hoverStars.value = 0;
-    };
-
-    const handleStarClick = (n) => {
-      // Toggle: erneuter Klick auf gleichen Stern setzt zurück
-      selected.value.ratingStars =
-        selected.value.ratingStars === n ? null : n;
+    // NEU: Sortierungs-Update (Trigger für app.js)
+    const updateSorting = () => {
+      console.log('Preis-Sortierung geändert:', selected.value.priceSort);
     };
 
     return {
-      filterOptions,
-      selected,
-      hoverStars,
-      handleStarEnter,
-      handleStarLeave,
-      handleStarClick
+      filterOptions, selected, hoverStars,
+      handleStarEnter, handleStarLeave, handleStarClick, updateSorting
     };
   },
   template: `
     <div>
-      <!-- Typ -->
+      <!-- Typ-Filter (bestehend) -->
       <div class="filter-category">
         <h4>Typ</h4>
         <div class="filter-list">
           <label v-for="opt in filterOptions.type" :key="opt.value">
-            <input
-              type="checkbox"
-              :value="opt.value"
-              v-model="selected.type"
-            >
+            <input type="checkbox" :value="opt.value" v-model="selected.type">
             {{ opt.label }}
           </label>
         </div>
       </div>
 
-      <!-- Bewertung -->
+      <!-- Bewertung Sterne Filter (NEU) -->
       <div class="filter-category">
         <h4>Bewertung</h4>
         <div class="star-rating-filter">
-          <span
-            v-for="n in 5"
-            :key="n"
-            class="star"
-            :class="{
-              filled:
-                (hoverStars && n <= hoverStars) ||
-                (!hoverStars && selected.ratingStars >= n)
-            }"
-            @mouseenter="handleStarEnter(n)"
-            @mouseleave="handleStarLeave"
-            @click="handleStarClick(n)"
-          >
-            ★
-          </span>
+          <span v-for="n in 5" 
+          :key="n" 
+          class="star" 
+          :data-stars="n"
+          :class="{ 
+            'filled': (hoverStars >= n) || (selected.ratingStars >= n)
+          }"
+                 @mouseenter="handleStarEnter(n)"
+                 @mouseleave="handleStarLeave"
+                 @click="handleStarClick">★</span>
           <small>{{ selected.ratingStars ? \`Ab \${selected.ratingStars} Sterne\` : 'Alle' }}</small>
         </div>
       </div>
 
-      <!-- Ausstattung -->
+      <!-- Ausstattung (bestehend) -->
       <div class="filter-category">
         <h4>Ausstattung</h4>
         <div class="filter-list">
           <label v-for="opt in filterOptions.features" :key="opt.value">
-            <input
-              type="checkbox"
-              :value="opt.value"
-              v-model="selected.features"
-            >
+            <input type="checkbox" :value="opt.value" v-model="selected.features">
             {{ opt.label }}
           </label>
         </div>
+      </div>
+
+      <!-- NEU: Preis-Sortierung -->
+      <div class="filter-category">
+        <h4>Preis sortieren</h4>
+        <select v-model="selected.priceSort" class="price-sort-select" @change="updateSorting">
+          <option value="">Standard</option>
+          <option value="asc">Preis aufsteigend</option>
+          <option value="desc">Preis absteigend</option>
+        </select>
       </div>
     </div>
   `

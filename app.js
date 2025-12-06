@@ -53,36 +53,48 @@ const App = {
       }
     }
 
+
     // Direkt beim Start Daten ziehen
     loadAccommodations();
     loadWishlist();
 
   const filteredAccommodations = Vue.computed(() => {
   const s = selected.value;
+ 
+
   
   // Filter aktiv? (inkl. Preis-Sortierung)
-  const filtersActive = 
-    s.type?.length > 0 || 
-    s.ratingStars > 0 || 
-    s.features?.length > 0 ||
-    s.priceSort;
+  const filtersActive =
+  s.type?.length > 0 ||
+  s.ratingStars > 0 ||
+  s.features?.length > 0 ||
+  s.priceSort ||
+  s.minPrice !== 30 ||
+  s.maxPrice !== 400;
+
   
   if (!filtersActive) return accommodations.value;
   
   // ALLE Filter KORREKT pro Hotel anwenden
-  let result = accommodations.value.filter(hotel => {
-    // Typ-Filter ✓
-    const typeOk = !s.type || s.type.length === 0 || s.type.includes(hotel.type);
-    
-    // Sterne-Filter ✓ (rating ist String "4", wird zu Int)
-    const ratingOk = !s.ratingStars || parseInt(hotel.rating) >= s.ratingStars;
-    
-    // Features-Filter ✓
-    const featOk = !s.features || s.features.length === 0 || 
-                    s.features.every(f => hotel.features.includes(f));
-    
-    return typeOk && ratingOk && featOk;
-  });
+ let result = accommodations.value.filter(hotel => {
+  const typeOk =
+    !s.type || s.type.length === 0 || s.type.includes(hotel.type);
+
+  const ratingOk =
+    !s.ratingStars || parseInt(hotel.rating) >= s.ratingStars;
+
+  const featOk =
+    !s.features || s.features.length === 0 ||
+    s.features.every(f => hotel.features.includes(f));
+
+  const price = parseFloat(hotel.price); // kommt vom Backend als Zahl/String
+  const priceOk =
+    (!s.minPrice || price >= s.minPrice) &&
+    (!s.maxPrice || price <= s.maxPrice);
+
+  return typeOk && ratingOk && featOk && priceOk;
+});
+
   
   // NEU: Preis-Sortierung NACH dem Filtern
   if (s.priceSort === 'asc') {

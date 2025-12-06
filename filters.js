@@ -17,16 +17,20 @@ const filtersApp = {
     });
 
     // Erweiterte Filter inklusive NEU: priceSort
-    const selected = ref({
-      type: [],
-      rating: [],
-      ratingStars: null,
-      features: [],
-      priceSort: ''  // NEU: 'asc', 'desc' oder ''
-    });
+    // Erweiterte Filter inklusive Preisbereich & Sortierung
+const selected = ref({
+  type: [],
+  rating: [],          // ungenutzt, aber ok
+  ratingStars: null,
+  features: [],
+  priceSort: '',       // 'asc', 'desc' oder ''
+  minPrice: 30,        // NEU: Mindestpreis
+  maxPrice: 400        // NEU: Höchstpreis
+});
 
-    // Global für app.js verfügbar
-    window.filtersSelected = selected;
+// Global für app.js verfügbar
+window.filtersSelected = selected;
+
 
     // Bestehender Sternen-Code bleibt gleich
     const hoverStars = ref(0);
@@ -94,7 +98,37 @@ const handleStarClick = (event) => {
           </label>
         </div>
       </div>
+      <!-- Budget (pro Nacht) -->
+<div class="filter-category">
+  <h4>Ihr Budget (pro Nacht)</h4>
 
+  <div class="price-labels">
+    <span>€ {{ selected.minPrice }}</span>
+    <span>€ {{ selected.maxPrice }}+</span>
+  </div>
+
+  <div class="double-price-slider">
+  <input
+    type="range"
+    min="30"
+    max="400"
+    step="5"
+    v-model.number="selected.minPrice"
+    @input="selected.minPrice = Math.min(selected.minPrice, selected.maxPrice - 10)"
+    class="price-slider"
+  />
+  <input
+    type="range"
+    min="30"
+    max="400"
+    step="5"
+    v-model.number="selected.maxPrice"
+    @input="selected.maxPrice = Math.max(selected.maxPrice, selected.minPrice + 10)"
+    class="price-slider"
+  />
+</div>
+
+</div>
       <!-- NEU: Preis-Sortierung -->
       <div class="filter-category">
         <h4>Preis sortieren</h4>
@@ -105,6 +139,7 @@ const handleStarClick = (event) => {
         </select>
       </div>
     </div>
+   
   `
 };
 

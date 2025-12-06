@@ -571,6 +571,64 @@ merkliste-button-container {
   border-color: #219274;
   background: #f0f8f0;
 }
+.price-slider-wrapper {
+  padding: 0.5em 0.2em 0.2em;
+}
 
+.price-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.4em;
+  font-size: 0.95em;
+  color: #219274;
+}
 
+.double-price-slider {
+  position: relative;
+  height: 26px;
+}
 
+.double-price-slider .price-slider {
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+}
+
+/* blaue Linie */
+.double-price-slider .price-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: #007aff;
+  pointer-events: all;
+}
+.double-price-slider .price-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: #007aff;
+  pointer-events: all;
+}
+
+/* runde blaue Knöpfe */
+.double-price-slider .price-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #007aff;
+  border: 2px solid #fff;
+  margin-top: -6px;
+  pointer-events: all;
+}
+.double-price-slider .price-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #007aff;
+  border: 2px solid #fff;
+  pointer-events: all;
+}

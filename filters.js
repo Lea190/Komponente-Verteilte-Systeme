@@ -1,4 +1,4 @@
-const { createApp, ref, onMounted } = Vue;
+const { ref, onMounted } = Vue;
 
 const filtersApp = {
   setup() {
@@ -171,4 +171,8 @@ const handleStarClick = (event) => {
   `
 };
 
-createApp(filtersApp).mount('#filters-container');
+// Nur mounten, wenn das Ziel-Element auf der Seite existiert
+const _filtersMountEl = document.getElementById('filters-container');
+if (_filtersMountEl) {
+  Vue.createApp(filtersApp).mount(_filtersMountEl);
+}

@@ -111,6 +111,27 @@ def remove_from_wishlist(item_id):
     return jsonify({"message": "Unterkunft von Merkliste entfernt"}), 200
 
 
+@app.put("/api/wishlist/<int:item_id>")
+def update_wishlist(item_id):
+    """
+    Aktualisiert ein Element in der Merkliste (Persons/Nights/TotalPrice etc.).
+    Erwartet JSON mit den zu aktualisierenden Feldern.
+    """
+    item = request.get_json()
+    if not item:
+        return jsonify({"error": "Ungültige Daten"}), 400
+
+    for idx, entry in enumerate(WISHLIST):
+        if entry.get("id") == item_id:
+            # Merge: vorhandenes Eintrag mit neuen Feldern überschreiben
+            updated = dict(entry)
+            updated.update(item)
+            WISHLIST[idx] = updated
+            return jsonify({"message": "Merkliste aktualisiert"}), 200
+
+    return jsonify({"error": "Eintrag nicht gefunden"}), 404
+
+
 
 if __name__ == "__main__":
     # Starte lokal auf Port 5000; Port kannst du bei Bedarf ändern.

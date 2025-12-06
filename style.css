@@ -779,3 +779,132 @@ merkliste-button-container {
 .book-now-btn:hover {
   filter: brightness(1.05);
 }
+.wishlist-meta {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.wishlist-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wishlist-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.wishlist-btn.primary {
+  background: linear-gradient(135deg,#3498db,#2980b9);
+  color: #fff;
+}
+
+.wishlist-btn.secondary {
+  background: #ecf0f1;
+  color: #34495e;
+}
+
+.wishlist-btn.danger {
+  background: #e74c3c;
+  color: #fff;
+}
+
+/* Wishlist: improved layout */
+.wishlist-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+.meta-left {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+.meta-persons {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #1f6f54;
+}
+.meta-nights {
+  font-size: 0.95rem;
+  color: #4b6b60;
+}
+.wishlist-total {
+  text-align: right;
+}
+.total-label {
+  font-size: 0.8rem;
+  color: #6b8f80;
+}
+.total-amount {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0b5b3f;
+}
+
+/* Better buttons */
+.wishlist-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.wishlist-btn.primary {
+  background: linear-gradient(135deg,#2ecc71,#27ae60);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(39,174,96,0.18);
+}
+.wishlist-btn.primary:hover { transform: translateY(-2px); }
+.wishlist-btn.secondary {
+  background: #ffffff;
+  color: #2f4f3f;
+  border: 1px solid #e6f3ec;
+}
+.wishlist-btn.secondary:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.04); }
+.wishlist-btn.danger { background: linear-gradient(135deg,#ff6b6b,#e74c3c); box-shadow: 0 6px 18px rgba(231,76,60,0.12); }
+
+/* Card description truncation */
+.card-description {
+  margin-top: 12px;
+  color: #333;
+  line-height: 1.35rem;
+}
+.card-description.collapsed {
+  max-height: 3.3rem; /* ~2 lines */
+  overflow: hidden;
+  position: relative;
+}
+.card-description.collapsed::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.2rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0), #ffffff 60%);
+}
+.more-link {
+  background: none;
+  border: none;
+  color: #1f6f54;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 6px;
+  padding: 0;
+}
+
+/* Popup tweaks */
+.booking-popup { max-width: 560px; width: 94%; border-radius: 12px; }
+.popup-image { width: 180px; height: 120px; object-fit: cover; border-radius: 8px; margin-right: 12px; }

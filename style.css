@@ -632,3 +632,150 @@ merkliste-button-container {
   border: 2px solid #fff;
   pointer-events: all;
 }
+/* Booking Popup Styles */
+.booking-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.booking-popup {
+  background: #fff;
+  border-radius: 20px;
+  max-width: 520px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+  animation: popupSlideIn 0.25s ease-out;
+}
+
+@keyframes popupSlideIn {
+  from { transform: translateY(20px) scale(0.9); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.popup-header {
+  padding: 20px 26px 14px;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+.popup-header h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star {
+  font-size: 22px;
+  color: #ddd;
+}
+
+.star.filled {
+  color: #ffd700;
+}
+
+.rating-text {
+  font-size: 14px;
+  color: #666;
+}
+
+.popup-close {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  border: none;
+  background: transparent;
+  font-size: 26px;
+  cursor: pointer;
+  color: #999;
+}
+
+.popup-close:hover {
+  color: #333;
+}
+
+.popup-details {
+  padding: 20px 26px;
+  display: flex;
+  gap: 18px;
+}
+
+.popup-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.booking-form {
+  padding: 0 26px 24px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid #e1e5e9;
+  font-size: 15px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.total-price {
+  margin: 18px 0;
+  padding: 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#f8f9fa,#e9ecef);
+  text-align: center;
+}
+
+.total-price h3 {
+  margin: 0 0 4px;
+}
+
+.price-breakdown {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.book-now-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg,#3498db,#2980b9);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.book-now-btn:hover {
+  filter: brightness(1.05);
+}

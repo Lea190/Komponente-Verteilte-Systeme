@@ -48,6 +48,7 @@ const wishlistApp = {
     const editingItem = Vue.ref(null);
     const editPersons = Vue.ref(1);
     const editNights = Vue.ref(1);
+    const bookingConfirm = Vue.ref(null);
     const expandedId = Vue.ref(null);
 
     function openEditPopup(item) {
@@ -96,52 +97,101 @@ const wishlistApp = {
       setTimeout(() => (notification.value = ''), 2500);
     }
 
-    function bookItem(item) {
-      const persons = Number(item.persons) || 1;
-      const nights = Number(item.nights) || 1;
-      const total = Number(item.totalPrice) || (parseFloat(item.price) || 0) * persons * nights;
-      alert(`Buchung:\n${item.name}\n${persons} Personen, ${nights} Nächte\nGesamt: ${total.toFixed(2)} €`);
+    async function bookAndRemove() {
+      if (!editingItem.value) return;
+      const itemId = editingItem.value.id;
+      const itemName = editingItem.value.name;
+      
+      const updated = {
+        persons: Number(editPersons.value) || 1,
+        nights: Number(editNights.value) || 1,
+        totalPrice: Number(editTotal.value) || 0
+      };
+
+      try {
+        const res = await fetch(`http://127.0.0.1:5000/api/wishlist/${itemId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated)
+        });
+        
+        if (res.ok) {
+          editingItem.value = null;
+          bookingConfirm.value = itemName;
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          
+          // Jetzt das Item löschen
+          try {
+            await fetch(`http://127.0.0.1:5000/api/wishlist/${itemId}`, {
+              method: "DELETE"
+            });
+            await loadWishlist();
+          } catch (err) {
+            console.error('Fehler beim Entfernen', err);
+          }
+          
+          bookingConfirm.value = null;
+        }
+      } catch (err) {
+        console.error('Fehler beim Buchen', err);
+        notification.value = 'Fehler beim Buchen';
+      }
+      setTimeout(() => (notification.value = ''), 3000);
     }
 
     // beim Start laden
     loadWishlist();
 
-    return { wishlist, removeFromWishlist, openEditPopup, bookItem, notification, editingItem, editPersons, editNights, saveEdit, cancelEdit, editTotal, expandedId, toggleDescription };
+    return { wishlist, removeFromWishlist, openEditPopup, notification, editingItem, editPersons, editNights, saveEdit, cancelEdit, editTotal, expandedId, toggleDescription, bookAndRemove, bookingConfirm };
   },
   template: `
     <div>
       <h1>Merkliste</h1>
       <div class="notification" v-if="notification">{{ notification }}</div>
       <div class="accommodation-grid" v-if="wishlist.length">
-        <div v-for="item in wishlist" :key="item.id" class="accommodation-card">
-          <img :src="item.image" alt="Bild" class="card-image" v-if="item.image" />
+        <div v-for="item in wishlist" :key="item.id" class="accommodation-card wishlist-card">
+          <div class="card-image-container">
+            <img :src="item.image" alt="Bild" class="card-image" v-if="item.image" />
+          </div>
           <div class="card-content">
-            <h3 class="card-title">{{ item.name }} <small class="card-type">{{ item.type }}</small></h3>
-            <p class="card-location">{{ item.city }} • {{ item.type }}</p>
-            <p class="card-price">{{ parseFloat(item.price).toFixed(2) }} € / Nacht</p>
-            <div class="wishlist-meta-row">
-              <div class="meta-left">
-                <span class="meta-persons">{{ item.persons }} Person(en)</span>
-                <span class="meta-nights">{{ item.nights }} Nacht/Nächte</span>
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">{{ item.name }}</h3>
+                <p class="card-location">{{ item.city }} • {{ item.type }}</p>
               </div>
-              <div class="wishlist-total">
-                <div class="total-label">Gesamt</div>
-                <div class="total-amount">{{ item.totalPrice.toFixed(2) }} €</div>
+              <div class="card-persons-badge">{{ item.persons }} 👤</div>
+            </div>
+
+            <p class="card-nights-info">{{ item.nights }} Nacht{{ item.nights > 1 ? 'e' : '' }}</p>
+
+            <p class="card-description">{{ item.description }}</p>
+
+            <div class="card-footer">
+              <div class="footer-total">
+                <span class="total-label">Gesamtpreis</span>
+                <span class="total-amount">{{ item.totalPrice.toFixed(2) }} €</span>
               </div>
             </div>
 
-            <div class="wishlist-actions">
-              <button class="wishlist-btn secondary" @click="openEditPopup(item)">Bearbeiten</button>
-              <button class="wishlist-btn primary" @click="bookItem(item)">Buchen</button>
-              <button class="wishlist-btn danger" @click="removeFromWishlist(item)">Entfernen</button>
+            <div class="wishlist-actions-bottom">
+              <button class="wishlist-btn-alt danger" @click="removeFromWishlist(item)">Löschen</button>
+              <button class="wishlist-btn-alt primary" @click="openEditPopup(item)">Ändern</button>
             </div>
-
-            <p :class="['card-description', (expandedId === item.id) ? '' : 'collapsed']">{{ item.description }}</p>
-            <button class="more-link" @click="toggleDescription(item)">{{ expandedId === item.id ? 'Weniger' : 'Mehr' }}</button>
           </div>
         </div>
       </div>
       <p v-else>Die Merkliste ist leer.</p>
+
+      <!-- Booking Confirmation Popup -->
+      <div v-if="bookingConfirm" class="booking-popup-overlay">
+        <div class="booking-popup booking-confirm-modal">
+          <div class="confirm-content">
+            <h2>✅ Unterkunft erfolgreich gebucht!</h2>
+            <p>{{ bookingConfirm }}</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Edit Popup -->
       <div v-if="editingItem" class="booking-popup-overlay" @click="cancelEdit">
         <div class="booking-popup" @click.stop>
@@ -154,8 +204,15 @@ const wishlistApp = {
             <div class="hotel-info">
               <p><strong>{{ editingItem.city }}</strong> • {{ editingItem.type }}</p>
               <p class="price-per-night">{{ parseFloat(editingItem.price).toFixed(2) }} € / Nacht</p>
+              <p v-if="editingItem.rating">⭐ {{ editingItem.rating }}/5</p>
               <p>Max. {{ editingItem.max_persons }} Personen</p>
             </div>
+          </div>
+          <div class="popup-description">
+            <p><strong>Beschreibung:</strong> {{ editingItem.description }}</p>
+            <p v-if="editingItem.features && editingItem.features.length">
+              <strong>Ausstattung:</strong> {{ editingItem.features.join(', ') }}
+            </p>
           </div>
           <div class="booking-form">
             <div class="form-group">
@@ -171,9 +228,9 @@ const wishlistApp = {
             <div class="total-price">
               <h3>Gesamtpreis: {{ editTotal.toFixed(2) }} €</h3>
             </div>
-            <div style="display:flex;gap:.6rem;margin-top:10px;">
-              <button class="book-now-btn" style="background:#2ecc71" @click="saveEdit">Speichern</button>
-              <button class="book-now-btn" style="background:#999" @click="cancelEdit">Abbrechen</button>
+            <div style="display:flex;gap:.8rem;margin-top:14px;">
+              <button class="book-now-btn danger-popup" @click="saveEdit">Schließen</button>
+              <button class="book-now-btn" @click="bookAndRemove">Buchen</button>
             </div>
           </div>
         </div>

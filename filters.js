@@ -28,6 +28,27 @@ const selected = ref({
 // Global für app.js verfügbar
 window.filtersSelected = selected;
 
+// Filter in localStorage speichern
+const saveFiltersToStorage = () => {
+  localStorage.setItem('savedFilters', JSON.stringify(selected.value));
+};
+
+// Filter aus localStorage laden
+const loadFiltersFromStorage = () => {
+  const saved = localStorage.getItem('savedFilters');
+  if (saved) {
+    try {
+      const filters = JSON.parse(saved);
+      selected.value = { ...selected.value, ...filters };
+    } catch (err) {
+      console.error('Fehler beim Laden gespeicherter Filter:', err);
+    }
+  }
+};
+
+// Filter beobachten und speichern
+Vue.watch(() => selected.value, saveFiltersToStorage, { deep: true });
+
 
     // Bestehender Sternen-Code bleibt gleich
     const hoverStars = ref(0);
@@ -75,6 +96,7 @@ const handleStarClick = (event) => {
     };
 
     onMounted(() => {
+      loadFiltersFromStorage();
       loadFeatures();
     });
 

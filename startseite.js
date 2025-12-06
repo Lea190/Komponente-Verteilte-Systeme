@@ -78,11 +78,12 @@ async function ladeStaedte() {
 ladeStaedte();
 
 
-// Bei Klick auf „Suchen“ zur Buchen-Seite mit Stadt-Parameter
+// Bei Klick auf „Suchen" zur Buchen-Seite mit Stadt-Parameter
 suchenBtn.addEventListener('click', () => {
     const stadt = stadtInput.value;
     if (stadt) {
-        window.location.href = `buchen.html?stadt=${encodeURIComponent(stadt)}`;
+        localStorage.setItem('selectedCity', stadt);
+        window.location.href = 'buchen.html';
     } else {
         alert('Bitte wählen Sie eine Stadt aus.');
     }

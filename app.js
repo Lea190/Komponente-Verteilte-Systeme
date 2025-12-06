@@ -31,15 +31,11 @@ const App = {
         const res = await fetch("http://127.0.0.1:5000/api/accommodations");
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         accommodations.value = await res.json();
-        const urlParams = new URLSearchParams(window.location.search);
-        const selectedStadt = urlParams.get('stadt');
-        if (selectedStadt) {
-          accommodations.value = accommodations.value.filter(hotel => hotel.city === selectedStadt);
-          // 🔥 GEÄNDERT: Sicherstellen dass window.filtersSelected existiert
-          if (window.filtersSelected) {
-            window.filtersSelected.value.stadt = [selectedStadt];
-          }
-          console.log(`Gefiltert nach Stadt: ${selectedStadt}`);
+        // Stadt-Parameter aus localStorage statt URL
+        const savedCity = localStorage.getItem('selectedCity');
+        if (savedCity) {
+          accommodations.value = accommodations.value.filter(hotel => hotel.city === savedCity);
+          console.log(`Gefiltert nach Stadt: ${savedCity}`);
         }
         console.log("✓ Unterkünfte geladen:", accommodations.value.length);
       } catch (err) {

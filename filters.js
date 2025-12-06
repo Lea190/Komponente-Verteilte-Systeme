@@ -95,6 +95,22 @@ const handleStarClick = (event) => {
       console.log('Preis-Sortierung geändert:', selected.value.priceSort);
     };
 
+    // Reset-Funktion: setzt Filter auf Defaults und entfernt gespeicherte Filter
+    const resetFilters = () => {
+      selected.value = {
+        type: [],
+        rating: [],
+        ratingStars: null,
+        features: [],
+        priceSort: '',
+        minPrice: 30,
+        maxPrice: 400
+      };
+      localStorage.removeItem('savedFilters');
+      // Trigger optional: falls andere Komponenten auf window.filtersSelected hören
+      if (window.filtersSelected) window.filtersSelected.value = selected.value;
+    };
+
     onMounted(() => {
       loadFiltersFromStorage();
       loadFeatures();
@@ -102,7 +118,7 @@ const handleStarClick = (event) => {
 
     return {
       filterOptions, selected, hoverStars,
-      handleStarEnter, handleStarLeave, handleStarClick, updateSorting
+      handleStarEnter, handleStarLeave, handleStarClick, updateSorting, resetFilters
     };
   },
   template: `
@@ -187,6 +203,10 @@ const handleStarClick = (event) => {
             {{ opt.label }}
           </label>
         </div>
+      </div>
+      <!-- Reset-Button: Alle Filter zurücksetzen -->
+      <div class="filter-category">
+        <button @click="resetFilters" class="wishlist-btn secondary" style="width:100%; padding:10px; margin-top:8px;">Alle Filter zurücksetzen</button>
       </div>
     </div>
    

@@ -85,7 +85,8 @@ const App = {
 
   const featOk =
     !s.features || s.features.length === 0 ||
-    s.features.every(f => hotel.features.includes(f));
+    // Änderung: OR-Verhalten — mindestens eine ausgewählte Eigenschaft genügt
+    s.features.some(f => hotel.features.includes(f));
 
   const price = parseFloat(hotel.price); // kommt vom Backend als Zahl/String
   const priceOk =

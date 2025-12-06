@@ -1,4 +1,4 @@
-const { createApp, ref } = Vue;
+const { createApp, ref, onMounted } = Vue;
 
 const filtersApp = {
   setup() {
@@ -10,10 +10,7 @@ const filtersApp = {
         { label: 'Hostel', value: 'Hostel' }
       ],
       rating: [], // Jetzt leer - Sterne übernehmen das
-      features: [
-        { label: 'Terrasse', value: 'Terrasse' },
-        { label: 'Spa', value: 'Spa' }
-      ]
+      features: [] // wird dynamisch aus der API befüllt
     });
 
     // Erweiterte Filter inklusive NEU: priceSort
@@ -47,10 +44,39 @@ const handleStarClick = (event) => {
 };
 
 
+    // Lade verfügbare Features dynamisch aus dem Backend
+    async function loadFeatures() {
+      try {
+        const res = await fetch('http://127.0.0.1:5000/api/accommodations');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const daten = await res.json();
+
+        const set = new Set();
+        daten.forEach(item => {
+          if (!item.features) return;
+          // item.features sollte ein Array sein (Server teilt es so)
+          item.features.forEach(f => {
+            if (!f) return;
+            set.add(String(f).trim());
+          });
+        });
+
+        const features = Array.from(set).filter(Boolean).sort((a,b)=> a.localeCompare(b, 'de'));
+        filterOptions.value.features = features.map(f => ({ label: f, value: f }));
+      } catch (err) {
+        console.error('Fehler beim Laden der Features:', err);
+        // Falls Fehler, einfach nichts anzeigen (oder Defaults belassen)
+      }
+    }
+
     // NEU: Sortierungs-Update (Trigger für app.js)
     const updateSorting = () => {
       console.log('Preis-Sortierung geändert:', selected.value.priceSort);
     };
+
+    onMounted(() => {
+      loadFeatures();
+    });
 
     return {
       filterOptions, selected, hoverStars,
@@ -84,8 +110,50 @@ const handleStarClick = (event) => {
                  @mouseenter="handleStarEnter(n)"
                  @mouseleave="handleStarLeave"
                  @click="handleStarClick">★</span>
-          <small>{{ selected.ratingStars ? \`Ab \${selected.ratingStars} Sterne\` : 'Alle' }}</small>
+          <small>{{ selected.ratingStars ? ('Ab ' + selected.ratingStars + ' Sterne') : 'Alle' }}</small>
         </div>
+      </div>
+
+      <!-- NEU: Preis-Sortierung -->
+      <div class="filter-category">
+        <h4>Preis sortieren</h4>
+        <select v-model="selected.priceSort" class="price-sort-select" @change="updateSorting">
+          <option value="">Standard</option>
+          <option value="asc">Preis aufsteigend</option>
+          <option value="desc">Preis absteigend</option>
+        </select>
+      </div>
+
+      <!-- Budget (pro Nacht) -->
+      <div class="filter-category">
+        <h4>Ihr Budget (pro Nacht)</h4>
+
+        <div class="price-labels">
+          <span>€ {{ selected.minPrice }}</span>
+          <span>€ {{ selected.maxPrice }}+</span>
+        </div>
+
+        <div class="double-price-slider">
+          <input
+            type="range"
+            min="30"
+            max="400"
+            step="5"
+            v-model.number="selected.minPrice"
+            @input="selected.minPrice = Math.min(selected.minPrice, selected.maxPrice - 10)"
+            class="price-slider"
+          />
+          <input
+            type="range"
+            min="30"
+            max="400"
+            step="5"
+            v-model.number="selected.maxPrice"
+            @input="selected.maxPrice = Math.max(selected.maxPrice, selected.minPrice + 10)"
+            class="price-slider"
+          />
+        </div>
+
       </div>
 
       <!-- Ausstattung (bestehend) -->
@@ -97,46 +165,6 @@ const handleStarClick = (event) => {
             {{ opt.label }}
           </label>
         </div>
-      </div>
-      <!-- Budget (pro Nacht) -->
-<div class="filter-category">
-  <h4>Ihr Budget (pro Nacht)</h4>
-
-  <div class="price-labels">
-    <span>€ {{ selected.minPrice }}</span>
-    <span>€ {{ selected.maxPrice }}+</span>
-  </div>
-
-  <div class="double-price-slider">
-  <input
-    type="range"
-    min="30"
-    max="400"
-    step="5"
-    v-model.number="selected.minPrice"
-    @input="selected.minPrice = Math.min(selected.minPrice, selected.maxPrice - 10)"
-    class="price-slider"
-  />
-  <input
-    type="range"
-    min="30"
-    max="400"
-    step="5"
-    v-model.number="selected.maxPrice"
-    @input="selected.maxPrice = Math.max(selected.maxPrice, selected.minPrice + 10)"
-    class="price-slider"
-  />
-</div>
-
-</div>
-      <!-- NEU: Preis-Sortierung -->
-      <div class="filter-category">
-        <h4>Preis sortieren</h4>
-        <select v-model="selected.priceSort" class="price-sort-select" @change="updateSorting">
-          <option value="">Standard</option>
-          <option value="asc">Preis aufsteigend</option>
-          <option value="desc">Preis absteigend</option>
-        </select>
       </div>
     </div>
    

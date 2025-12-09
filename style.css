@@ -998,3 +998,66 @@ merkliste-button-container {
   margin: 0;
 }
 
+/* No Results Message */
+.no-results {
+  text-align: center;
+  padding: 60px 40px;
+  color: #4b6b60;
+}
+
+.no-results h3 {
+  font-size: 1.6rem;
+  color: #0b5b3f;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.no-results p {
+  font-size: 1rem;
+  color: #4b6b60;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 40px 0;
+  padding: 20px 0;
+}
+
+.pagination-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 2px solid #0b5b3f;
+  background: #fff;
+  color: #0b5b3f;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #0b5b3f;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(11, 91, 63, 0.2);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b5b3f;
+  min-width: 120px;
+  text-align: center;
+}
+

@@ -17,6 +17,10 @@ const App = {
     const wishlist = Vue.ref([]);              // wird vom Backend geladen
     const selectedAccommodation = Vue.ref(null);
     const notification = Vue.ref("");
+    const wishlistConfirm = Vue.ref(null);     // Modal für Merklisten-Bestätigung
+    const wishlistStatus = Vue.ref("");        // "added" oder "exists"
+    const currentPage = Vue.ref(1);            // Aktuelle Seite
+    const itemsPerPage = 9;                    // 9 Unterkünfte pro Seite
     const persons = Vue.ref(1);
     const nights = Vue.ref(1);
 
@@ -110,6 +114,27 @@ const App = {
   return result;
 });
 
+// Paginierte Unterkünfte
+const paginatedAccommodations = Vue.computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return filteredAccommodations.value.slice(start, end);
+});
+
+// Gesamtanzahl Seiten
+const totalPages = Vue.computed(() => {
+  return Math.ceil(filteredAccommodations.value.length / itemsPerPage);
+});
+
+// Seite wechseln
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    // Scroll nach oben
+    window.scrollTo(0, 0);
+  }
+};
+
 
     function selectAccommodation(item) {
   selectedAccommodation.value = item;
@@ -154,18 +179,31 @@ const App = {
     });
 
     const data = await res.json();
-    notification.value = data.message || "Zur Merkliste hinzugefügt";
 
     if (res.ok) {
-      await loadWishlist();
+      const itemName = selectedAccommodation.value.name;
+      const itemId = selectedAccommodation.value.id;
       closePopup();
+      
+      // Prüfe, ob die Unterkunft bereits auf der Merkliste existiert
+      const alreadyExists = wishlist.value.some(w => w.id === itemId);
+      
+      wishlistConfirm.value = itemName;
+      wishlistStatus.value = alreadyExists ? "exists" : "added";
+      
+      await loadWishlist();
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      wishlistConfirm.value = null;
+      wishlistStatus.value = "";
+    } else {
+      notification.value = "Fehler beim Hinzufügen zur Merkliste";
+      setTimeout(() => (notification.value = ""), 3000);
     }
   } catch (err) {
     console.error("Fehler beim Aktualisieren der Merkliste", err);
     notification.value = "Fehler beim Aktualisieren der Merkliste";
+    setTimeout(() => (notification.value = ""), 3000);
   }
-
-  setTimeout(() => (notification.value = ""), 3000);
 }
 
 
@@ -184,6 +222,10 @@ function confirmBooking() {
 
     return {
       filteredAccommodations,
+      paginatedAccommodations,
+      currentPage,
+      totalPages,
+      goToPage,
       selectAccommodation,
       selectedAccommodation,
       addToWishlist,
@@ -194,6 +236,8 @@ function confirmBooking() {
       persons,
       nights,
       totalPrice,
+      wishlistConfirm,
+      wishlistStatus,
     };
 
   },
@@ -206,7 +250,7 @@ function confirmBooking() {
 
     <div class="accommodation-grid">
   <div 
-    v-for="item in filteredAccommodations" 
+    v-for="item in paginatedAccommodations" 
     :key="item.id" 
     class="accommodation-card" 
     @click="selectAccommodation(item)"
@@ -231,6 +275,31 @@ function confirmBooking() {
       </p>
     </div>
   </div>
+</div>
+
+<!-- Pagination -->
+<div v-if="totalPages > 1" class="pagination">
+  <button 
+    class="pagination-btn" 
+    @click="goToPage(currentPage - 1)"
+    :disabled="currentPage === 1"
+  >
+    ← Zurück
+  </button>
+  <span class="pagination-info">Seite {{ currentPage }} von {{ totalPages }}</span>
+  <button 
+    class="pagination-btn" 
+    @click="goToPage(currentPage + 1)"
+    :disabled="currentPage === totalPages"
+  >
+    Weiter →
+  </button>
+</div>
+
+<div v-if="filteredAccommodations.length === 0" class="no-results">
+  <h3>Keine Unterkünfte gefunden</h3>
+  <p>Mit den gewählten Filteroptionen sind leider keine Unterkünfte verfügbar.</p>
+  <p>Bitte setzen Sie die Filter zurück und versuchen Sie es erneut.</p>
 </div>
 
     <div v-if="selectedAccommodation" class="booking-popup-overlay" @click="closePopup">
@@ -311,6 +380,17 @@ function confirmBooking() {
         @click="addToWishlistWithSelection">
         Zur Merkliste
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Merklisten-Bestätigungs-Popup -->
+<div v-if="wishlistConfirm" class="booking-popup-overlay">
+  <div class="booking-popup booking-confirm-modal">
+    <div class="confirm-content">
+      <h2 v-if="wishlistStatus === 'added'">✅ Unterkunft zur Merkliste hinzugefügt!</h2>
+      <h2 v-if="wishlistStatus === 'exists'">ℹ️ Unterkunft ist bereits auf der Merkliste</h2>
+      <p>{{ wishlistConfirm }}</p>
     </div>
   </div>
 </div>

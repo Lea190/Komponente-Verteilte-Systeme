@@ -34,21 +34,11 @@ Dieses Repository zeigt die Umsetzung eines funktionalen Buchungsservices als Ei
 
 ### Frontend
 
-Das Frontend besteht aus drei HTML-Seiten (`index.html`, `buchen.html`, `merkliste.html`), die jeweils spezialisierte JavaScript-Module einbinden.[file:10][file:5][file:6]
+Das Frontend rendert die Benutzeroberfläche und handhabt interaktive Elemente wie Filter, Suchfunktion und Popups.
 
-- **Startseite (`index.html` + `startseite.js`):**  
-  - Hero-Bereich mit Suchfeld.  
-  - Stadtvorschläge werden clientseitig aus einer Liste angeboten.  
-  - Die ausgewählte Stadt wird in `localStorage` gespeichert und beim Wechsel zur Ergebnis-Seite verwendet.[file:10][file:4]
-
-- **Ergebnis-/Buchungsseite (`buchen.html` + `filters.js` + `app.js`):**  
-  - Linke Spalte: Filter-Komponente (Typ, Sterne, Ausstattung, Preisbereich, Preis-Sortierung), umgesetzt mit einem eigenen Vue-App (`filtersApp`).[file:9][file:1]  
-  - Rechte Spalte: Haupt-App (`App` in `app.js`) für das Laden, Filtern, Paginieren und Anzeigen der Unterkünfte sowie das Öffnen des Detail-Popups.[file:4]  
-  - Die Filter-Auswahl wird über ein globales `window.filtersSelected` zwischen `filters.js` und `app.js` geteilt und zusätzlich im `localStorage` gesichert.[file:9][file:4]
-
-- **Merkliste-Seite (`merkliste.html` + `wishlist.js`):**  
-  - Eigenes Vue-App (`wishlistApp`), das die Merkliste vom Backend lädt und als Kacheln anzeigt.[file:2][file:5]  
-  - Edit-Dialog mit separatem Preis-Computed (`editTotal`) und Bestätigungs-Popup für „erfolgreich gebucht“.[file:2]
+- Technologien: HTML, CSS, Vanilla JavaScript mit Vue.js (Vue 3).
+-  Funktion: Darstellung von Startseite (index.html), Suchergebnissen (buchen.html), Merkliste (merkliste.html) sowie dynamische Filter (filters.js), Hotelkarten (app.js) und Wishlist-Logik (wishlist.js).
+- Vue.js-Integration: Vue.js steuert reaktive Komponenten wie Filter-Checkboxes, Sternbewertungen, Preisslider und Paginierung. Globale Zustände (window.filtersSelected) synchronisieren Filter zwischen Seiten.
 
 ### Backend
 

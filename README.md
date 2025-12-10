@@ -67,3 +67,8 @@ Die Datenpersistenz wird durch eine SQLite-Datenbank realisiert, die direkt mit 
 4. **Frontend öffnen:** startseite.html im Browser (Live Server empfohlen, Port 5500).
 5. **Testen:** Filter anwenden → Merkliste → Buchungsmodal → Bestätigung.
 
+## Designentscheidungen
+
+- Frontend mit Vue 3 als leichtgewichtiges SPA ohne Build-Tooling, um eine reaktive UI für Filter, Paginierung, Merkliste und Buchungs-Popup mit minimaler Komplexität umzusetzen.
+- Backend als schlanker Flask-REST-Service mit SQLite-Datenbank (aus  Daten.csv ), der Unterkünfte und eine einfache in‑Memory-Merkliste bereitstellt, um CRUD-Funktionalität prototypisch umzusetzen, ohne den Overhead einer voll verteilten Microservices-Landschaft.
+

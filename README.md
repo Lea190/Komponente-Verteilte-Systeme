@@ -37,39 +37,33 @@ Dieses Repository zeigt die Umsetzung eines funktionalen Buchungsservices als Ei
 Das Frontend rendert die Benutzeroberfläche und handhabt interaktive Elemente wie Filter, Suchfunktion und Popups.
 
 - Technologien: HTML, CSS, Vanilla JavaScript mit Vue.js (Vue 3).
--  Funktion: Darstellung von Startseite (index.html), Suchergebnissen (buchen.html), Merkliste (merkliste.html) sowie dynamische Filter (filters.js), Hotelkarten (app.js) und Wishlist-Logik (wishlist.js).
+-  Funktion: Darstellung von Startseite, Suchergebnissen, Merkliste sowie dynamische Filter, Hotelkarten und Wishlist-Logik.
 - Vue.js-Integration: Vue.js steuert reaktive Komponenten wie Filter-Checkboxes, Sternbewertungen, Preisslider und Paginierung. Globale Zustände (window.filtersSelected) synchronisieren Filter zwischen Seiten.
 
 ### Backend
 
-Das Backend ist ein schlankes Flask-Projekt mit reiner JSON-API und CORS-Freigabe für den Frontend-Port.[file:3]
+Das Backend enthält die Geschäftslogik der Anwendung und stellt dem Frontend die nötigen Daten und Funktionen über eine REST-API zur Verfügung.
 
-- **Endpoints (Auszug):**
-  - `GET /api/accommodations` – liefert alle Unterkünfte.[file:3]  
-  - `GET /api/accommodations/<stadt>` – filtert Unterkünfte nach Stadt.[file:3]  
-  - `GET /api/wishlist` – gibt die aktuelle Merkliste zurück.[file:3]  
-  - `POST /api/wishlist` – fügt ein neues Element zur Merkliste hinzu (id, name, city, price, maxpersons, persons, nights, totalPrice, …).[file:3][file:4]  
-  - `PUT /api/wishlist/<id>` – aktualisiert Personen, Nächte und Gesamtpreis eines Eintrags.[file:3][file:2]  
-  - `DELETE /api/wishlist/<id>` – entfernt einen Eintrag aus der Merkliste.[file:3][file:2]
+- Technologien: Python, Flask Micro-Framework, Flask-CORS
+- Funktion: Bereitstellung der Unterkunftsdaten aus der SQLite-Datenbank, Routing der API-Endpunkte und Verwaltung der Merkliste während des Buchungsprozesses.
+- Flask: Ist ein Micro-Framework für Python zur Entwicklung von Webanwendungen und REST-APIs. Es bietet eine einfache und flexible Möglichkeit, Endpunkte zu definieren und JSON-Daten bereitzustellen, ohne die Komplexität eines großen, monolithischen Frameworks in Kauf nehmen zu müssen.
 
-- **Datenzugriff:**  
-  - SQLite-Verbindung über `sqlite3`, Pfad zur DB in `DBPATH`.  
-  - Unterkünfte werden aus der Tabelle `Unterkunft` geladen, deren Spalten zu den Feldern in `Daten.csv` passen (z.B. `UnterkunftID`, `Name`, `Stadt`, `PreisproNacht`, `maxPersonen`, `Eigenschaften`, `BildURL`).[file:3][file:6]  
-  - Die Feldwerte werden in Python-Dictionaries gemappt und als JSON an das Frontend zurückgegeben (inkl. `features`-Array und `image`-URL).[file:3]
 
-- **Merkliste-Implementierung:**  
-  - Die Merkliste liegt bewusst nur im Arbeitsspeicher (globale Python-Liste `WISHLIST`), da die Persistenz hier nicht im Fokus steht.[file:3]  
 
-### Datenbasis (`Daten.csv`)
+  
+### Datenbank
 
-`Daten.csv` liefert realistische Beispieldaten für Hotels, Wohnungen und Hostels in verschiedenen europäischen Städten.[file:6]
-
-- **Spalten (Auszug):** `UnterkunftID`, `Name`, `Bezeichnung`, `Sterne`, `Stadt`, `PreisproNacht`, `maxPersonen`, `Beschreibung`, `Eigenschaften`, `BildURL`.[file:6]
-- **Beispiele:**  
-  - Stadthotels in Berlin, Hostels in Paris, Apartments in Rom, Grachtenwohnungen in Amsterdam und Strandunterkünfte in Barcelona.[file:6]  
-  - Eigenschaften-Kombinationen wie „WLAN“, „Frühstück“, „Küche“, „Balkon“, „Spa“, „Kinderbett“, „Shuttle“ werden für die Filter-Logik genutzt.[file:6][file:9]
+Die Datenpersistenz wird durch eine SQLite-Datenbank realisiert, die direkt mit der Python-Standardbibliothek angesprochen wird.
+- Technologien: sqlite3: Bibliothek zur Ausführung von SQL-Befehlen aus dem Flask-Backend, etwa für das Laden der Unterkünfte. 
+    
 
 ## Setup und Ausführung
 
-1. **Repository klonen**
+1. **Voraussetzungen:** Python 3.8+, Node.js nicht erforderlich (CDN für Vue.js).
+2. **Backend starten:**
+    pip install flask flask-cors
+    python backend.py
+3. Server läuft auf  http://127.0.0.1:5000 . SQLite-DB wird automatisch geladen.
+4. **Frontend öffnen:** startseite.html im Browser (Live Server empfohlen, Port 5500).
+5. **Testen:** Filter anwenden → Merkliste → Buchungsmodal → Bestätigung.
 

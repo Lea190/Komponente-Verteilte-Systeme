@@ -1,6 +1,6 @@
 # Komponente-Verteilte-Systeme
 
-Dieses Repository zeigt die Umsetzung eines funktionalen Buchungsservices als Einzelportfolio im Rahmen der DHBW-Vorlesung “Verteilte Systeme und Webentwicklung”. Der Fokus liegt auf einer suchbasierten Unterkunftsübersicht mit Filtermöglichkeiten, Detail-Popups, dynamischer Preisberechnung und einer Merkliste, die über ein Flask-Backend bereitgestellte JSON-APIs nutzt.
+Dieses Repository zeigt die Umsetzung eines funktionalen Buchungsservices als Einzelportfolio im Rahmen der DHBW-Vorlesung “Verteilte Systeme und Webentwicklung”. Der Fokus liegt auf einer suchbasierten Unterkunftsübersicht mit Filtermöglichkeiten und einer Merkliste, die über ein Flask-Backend bereitgestellte JSON-APIs nutzt.
 
 ## Features
 
@@ -70,5 +70,25 @@ Die Datenpersistenz wird durch eine SQLite-Datenbank realisiert, die direkt mit 
 ## Designentscheidungen
 
 - Frontend mit Vue 3 als leichtgewichtiges SPA ohne Build-Tooling, um eine reaktive UI für Filter, Paginierung, Merkliste und Buchungs-Popup mit minimaler Komplexität umzusetzen.
-- Backend als schlanker Flask-REST-Service mit SQLite-Datenbank (aus  Daten.csv ), der Unterkünfte und eine einfache in‑Memory-Merkliste bereitstellt, um CRUD-Funktionalität prototypisch umzusetzen, ohne den Overhead einer voll verteilten Microservices-Landschaft.
+- Verwendung von Flask als Backend‑Framework: Schlankes Python‑Framework, mit dem sich eine kleine REST‑API für Unterkünfte und Merkliste mit wenig Boilerplate umsetzen lässt
+- SQLite als Datenbank: Leichtgewichtige, dateibasierte DB ohne zusätzlichen Server
 
+## Integration und Abgrenzug zum Architectual Concept Design (ACD)
+Dieser Abschnitt ordnet die vorliegende Implementierung in das im Gruppenprojekt erarbeitete Architecture Concept Document (ACD) ein und begründet bewusste Abweichungen für dieses Einzelportfolio.
+
+### Integration in das Gesamtsystem 
+Im Kontext des ACDs, das eine service‑orientierte Architektur mit mehreren entkoppelten Services vorsieht, repräsentiert dieses Repository einen schlanken Prototypen für den Buchungs‑ und Rechercheteil („Suchen & Merken“).  Die Komponente stellt eine eigenständige Weboberfläche bereit, die über eine REST‑API mit einem kleinen Flask‑Backend kommuniziert und damit fachlich an den im ACD beschriebenen Buchungsservice anknüpft. 
+- Interne Struktur: Die Implementierung ist als monolithische Client‑Server‑Anwendung aufgebaut; ein Flask‑Backend kapselt die Datenzugriffe auf eine lokale SQLite‑Datenbank, während das Frontend aus statischem HTML/CSS/JavaScript mit Vue‑Unterstützung besteht.
+- Schnittstellen: Das Backend stellt JSON‑basierte REST‑Endpunkte ( /api/accommodations ,  /api/wishlist ) bereit, über die das Frontend Unterkünfte lädt, filtert und Merklisteneinträge verwaltet; diese API kann perspektivisch durch einen im ACD beschriebenen zentralen Buchungsservice ersetzt oder dahinter geschaltet werden.
+
+### Abweichung vom ACD
+Im Vergleich zur im ACD beschriebenen Zielarchitektur wurden für das Einzelportfolio gezielt technologische und architektonische Vereinfachungen vorgenommen. 
+| Bereich        | Geplant im ACD (Ziel)                      | Implementiert im Portfolio (Ist)      | Begründung der Abweichung                     |
+| :------------ | :------------------------------------------ | :---------------- | :------------------------------------------ |
+| **Architekturstil**       | PService‑Orientierte Architektur mit mehreren Backend‑Services und zentralem Integrationslayer        | Monolithische Webapplikation mit kombiniertem Frontend und Flask‑Backend     | Reduktion der Komplexität, da eine verteilte SOA für einen lokalen Prototypen nicht notwendig ist.       |
+| **Kommunikation**   | Orchestrierung über zentrale Integrations‑ und Routing‑Komponenten | Direkte HTTP‑Kommunikation zwischen Browser und Flask‑API     | MFür den Laborbetrieb genügt eine direkte REST‑Anbindung; zusätzliche Infrastruktur würde keinen Mehrwert für die Kernfunktionen bringen.  |
+| **Frontend**      | Moderne SPA mit eigenem Build‑Prozess      | Statisches HTML/CSS/JS mit etwas Vue 3 via CDN     | Fokus auf schnelle Prototyp‑Entwicklung ohne Build‑Tooling; die UI bleibt leichtgewichtig und einfach deploybar.      |
+| **Backend‑Technologie** | Mehrere skalierbare Services auf Cloud‑Infrastruktur|Ein einzelnes Python‑Flask‑Backend auf dem Entwicklerrechner    | Ein einzelner Service ist für die Umsetzung von Suche, Filterung und Merkliste ausreichend und erleichtert Debugging und Verständnis.      |
+| **Datenbank** | Zentrale, hochverfügbare Datenhaltung (z.B. PostgreSQL)| Lokale SQLite‑Datenbank im Dateisystem    | SQLite benötigt keine separate Server‑Installation und reicht für Testdaten und einen Einzelbenutzer‑Prototyp aus.     |
+
+Durch diese Vereinfachungen konzentriert sich das Portfolio auf die fachliche Kernlogik „Unterkunft suchen, filtern, merken und Buchung anstoßen“, während Skalierung, Hochverfügbarkeit und Sicherheitsmechanismen aus dem ACD bewusst ausgeklammert und nur konzeptionell vorbereitet sind. 
